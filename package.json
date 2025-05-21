@@ -12,7 +12,7 @@
     "@aws-amplify/ui-react": "^6.5.5",
     "@next/eslint-plugin-next": "^15.3.2",
     "aws-amplify": "^6.6.6",
-    "core-js": "^3.23.0",
+    "core-js": "^3.42.0",
     "eslint-plugin-import": "^2.31.0",
     "glob": "^9.0.0",
     "lru-cache": "^7.17.0",
@@ -36,8 +36,13 @@
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "rimraf": "^4.0.0",
+    "rimraf": "^4.3.1",
     "tsx": "^4.19.0",
     "typescript": "^5.8.3"
+  },
+  "overrides": {
+    "rimraf": "^4.3.1",
+    "core-js": "^3.23.3",
+    "glob": "^9.0.0"
   }
 }
