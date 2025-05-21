@@ -10,12 +10,12 @@
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.5.5",
+    "@babel/plugin-transform-class-properties": "^7.27.1",
     "@next/eslint-plugin-next": "^15.3.2",
     "aws-amplify": "^6.6.6",
     "core-js": "^3.42.0",
     "eslint-plugin-import": "^2.31.0",
     "glob": "^9.0.0",
-    "lru-cache": "^7.17.0",
     "next": "^14.2.29",
     "react": "^18",
     "react-dom": "^18"
@@ -42,6 +42,10 @@
   },
   "overrides": {
     "rimraf": "^4.3.1",
-    "glob": "^9.0.0"
+    "glob": "^9.0.0",
+    "inflight": "npm:lru-cache@^7.17.0",
+    "@babel/plugin-proposal-class-properties": "npm:@babel/plugin-transform-class-properties@^7.27.1",
+    "@babel/plugin-proposal-object-rest-spread": "npm:@babel/plugin-transform-object-rest-spread@^7.27.2",
+    "core-js": "^3.42.0"
   }
 }
