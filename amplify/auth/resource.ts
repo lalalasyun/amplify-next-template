@@ -36,7 +36,8 @@ export const auth = defineAuth({
       ],
       logoutUrls: [
         'http://localhost:3000/',
-        'https://localhost:3000/'      ],
+        'https://localhost:3000/'
+      ],
     }
   },
   groups: ["admins", "staff", "users"],

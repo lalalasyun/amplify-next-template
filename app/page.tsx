@@ -2,10 +2,8 @@
 
 import type { Schema } from '@/amplify/data/resource';
 import outputs from '@/amplify_outputs.json';
-import { useAuthenticator } from '@aws-amplify/ui-react';
-import '@aws-amplify/ui-react/styles.css';
 import { Amplify } from 'aws-amplify';
-import { fetchAuthSession } from 'aws-amplify/auth';
+import { fetchAuthSession, getCurrentUser, signInWithRedirect, signOut } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/data';
 import { useEffect, useState } from 'react';
 import './../app/app.css';
@@ -22,13 +20,36 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'form' | 'admin' | 'business' | 'contact'>('form');
   const [categories, setCategories] = useState<Array<Schema['FormItemCategory']['type']>>([]);
   const [userGroups, setUserGroups] = useState<string[]>([]);
-
-  const { user, signOut } = useAuthenticator();
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);  // 認証状態をチェック
+  useEffect(() => {
+    const checkAuthState = async () => {
+      try {
+        // URLにコードパラメータがある場合（OAuth コールバック）
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('code')) {
+          // コールバック処理後、URLをクリーンアップ
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
+      } catch (error) {
+        console.log('User not authenticated');
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkAuthState();
+  }, []);
 
   // 初期カテゴリデータを作成
   useEffect(() => {
-    createInitialCategories();
-  }, []);
+    if (user) {
+      createInitialCategories();
+    }
+  }, [user]);
 
   // Cognitoグループを取得
   useEffect(() => {
@@ -79,10 +100,63 @@ export default function App() {
       console.error('カテゴリの初期化に失敗しました:', error);
     }
   };
-
   // ユーザーの権限をチェック（Cognitoグループから取得）
   const isAdmin = userGroups.includes('admins');
   const isStaff = isAdmin || userGroups.includes('staff');
+
+  // サインアウト処理
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setUser(null);
+      setUserGroups([]);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };  // ログイン処理（Cognitoマネージドログインページにリダイレクト）
+  const handleSignIn = async () => {
+    try {
+      await signInWithRedirect();
+    } catch (error) {
+      console.error('Sign in error:', error);
+    }
+  };
+
+  // ローディング中の表示
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 未認証の場合のログイン画面
+  if (!user) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-100">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-6">
+              MAMY サービス管理システム
+            </h1>
+            <p className="text-gray-600 mb-8">
+              ログインしてサービスをご利用ください
+            </p>
+            <button
+              onClick={handleSignIn}
+              className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            >
+              ログイン
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen bg-gray-100">
@@ -96,12 +170,10 @@ export default function App() {
               </h1>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                ようこそ, {user?.signInDetails?.loginId}
-              </span>
-              <button
-                onClick={signOut}
+            <div className="flex items-center space-x-4">              <span className="text-sm text-gray-600">
+                ようこそ, {user?.username || user?.signInDetails?.loginId}
+              </span><button
+                onClick={handleSignOut}
                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
               >
                 サインアウト
