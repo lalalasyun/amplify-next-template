@@ -5,8 +5,8 @@ import { Amplify } from 'aws-amplify'
 import React from 'react'
 import './globals.css'
 
-if (process.env.AUTH_CUSTOM_DOMAIN) {
-  outputs.auth.oauth.domain = process.env.AUTH_CUSTOM_DOMAIN;
+if (process.env.NEXT_PUBLIC_AUTH_CUSTOM_DOMAIN) {
+  outputs.auth.oauth.domain = process.env.NEXT_PUBLIC_AUTH_CUSTOM_DOMAIN;
 }
 
 Amplify.configure(outputs)
