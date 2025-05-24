@@ -32,11 +32,11 @@ export const auth = defineAuth({
       // },
       callbackUrls: [
         'http://localhost:3000/',
-        'https://localhost:3000/',
+        'https://main.d2p6ypf9c2dxhq.amplifyapp.com/',
       ],
       logoutUrls: [
         'http://localhost:3000/',
-        'https://localhost:3000/'
+        'https://main.d2p6ypf9c2dxhq.amplifyapp.com/'
       ],
     }
   },
